@@ -9,7 +9,7 @@ GDELT_DOC_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
 def fetch_gdelt_articles(
     query: str = '("war" OR "conflict" OR "airstrike" OR "ceasefire")',
     timespan: str = "10d",
-    maxrecords: int = 250,
+    maxrecords: int = 200,
     max_retries: int = 5,
     retry_wait: int = 6,
 ) -> pd.DataFrame:
@@ -67,7 +67,7 @@ def main():
     df = fetch_gdelt_articles(
         query='(war OR conflict OR airstrike OR ceasefire)',
         timespan="10d",
-        maxrecords=250,
+        maxrecords=200,
         max_retries=5,
         retry_wait=6,
     )
