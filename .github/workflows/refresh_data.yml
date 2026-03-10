@@ -3,7 +3,10 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 * * * *"  # Runs every hour
+    - cron: "0 * * * *"
+
+permissions:
+  contents: write
 
 jobs:
   refresh-data:
