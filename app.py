@@ -231,64 +231,11 @@ GDELT_PATH = "data/processed/gdelt_war_news_cleaned.csv"
 
 df = load_acled_data(ACLED_PATH)
 gdelt_df = load_gdelt_data(GDELT_PATH)
-
+filtered_df = df.copy() if not df.empty else pd.DataFrame()
 # -----------------------------
 # Sidebar filters (ACLED only)
 # -----------------------------
-st.sidebar.markdown("## ACLED Filters")
 
-if not df.empty:
-    countries = sorted(df["country"].dropna().unique().tolist()) if "country" in df.columns else []
-
-    preferred_defaults = ["Iran", "Israel", "United States", "Russia", "Ukraine", "Syria", "Yemen", "Afghanistan", "Iraq", "Venezuela","Lebanon","Palestine","Gaza","Saudi Arabia","United Arab Emirates","Qatar","Bahrain","Kuwait","Oman","Jordan","Egypt","Libya","Turkey","Armenia","Azerbaijan","Georgia","Mali","Niger","Somalia","Ethiopia","Sudan","South Sudan"]
-    default_countries = [c for c in preferred_defaults if c in countries]
-
-    selected_countries = st.sidebar.multiselect(
-        "Country",
-        options=countries,
-        default=default_countries,
-    )
-
-    event_types = sorted(df["event_type"].dropna().unique().tolist()) if "event_type" in df.columns else []
-    selected_event_types = st.sidebar.multiselect(
-        "Event Type",
-        options=event_types,
-        default=event_types,
-    )
-
-    min_date = df["event_date"].min().date()
-    max_date = df["event_date"].max().date()
-
-    selected_dates = st.sidebar.date_input(
-        "Date Range",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
-    )
-
-    show_only_fatal = st.sidebar.checkbox("Only events with fatalities", value=False)
-
-    filtered_df = df.copy()
-
-    if selected_countries and "country" in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df["country"].isin(selected_countries)]
-
-    if selected_event_types and "event_type" in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df["event_type"].isin(selected_event_types)]
-
-    if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
-        start_date, end_date = selected_dates
-        filtered_df = filtered_df[
-            (filtered_df["event_date"].dt.date >= start_date)
-            & (filtered_df["event_date"].dt.date <= end_date)
-        ]
-
-    if show_only_fatal and "fatalities" in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df["fatalities"] > 0]
-
-    filtered_df = filtered_df.sort_values("event_date")
-else:
-    filtered_df = pd.DataFrame()
 
 # -----------------------------
 # Header
@@ -496,9 +443,83 @@ with tab1:
 # TAB 2 — ACLED
 # =========================================================
 with tab2:
-    if filtered_df.empty:
-        st.warning("No ACLED data matches the current filters.")
+    if df.empty:
+        st.warning("No ACLED data available.")
     else:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("ACLED Filters")
+
+        f1, f2 = st.columns(2)
+
+        with f1:
+            countries = sorted(df["country"].dropna().unique().tolist()) if "country" in df.columns else []
+            preferred_defaults = ["Iran", "Israel", "United States", "Russia", "Ukraine", "Syria", "Yemen", "Afghanistan", "Iraq", "Venezuela","Lebanon","Palestine","Gaza","Saudi Arabia","United Arab Emirates","Qatar","Bahrain","Kuwait","Oman","Jordan","Egypt","Libya","Turkey","Armenia","Azerbaijan","Georgia","Mali","Niger","Somalia","Ethiopia","Sudan","South Sudan"]
+            default_countries = [c for c in preferred_defaults if c in countries]
+            default_countries = [c for c in preferred_defaults if c in countries]
+
+            selected_countries = st.multiselect(
+                "Country",
+                options=countries,
+                default=default_countries,
+                key="acled_country_filter",
+            )
+
+        with f2:
+            event_types = sorted(df["event_type"].dropna().unique().tolist()) if "event_type" in df.columns else []
+            selected_event_types = st.multiselect(
+                "Event Type",
+                options=event_types,
+                default=event_types,
+                key="acled_event_type_filter",
+            )
+
+        min_date = df["event_date"].min().date()
+        max_date = df["event_date"].max().date()
+
+        d1, d2 = st.columns([2, 1])
+
+        with d1:
+            selected_dates = st.date_input(
+                "Date Range",
+                value=(min_date, max_date),
+                min_value=min_date,
+                max_value=max_date,
+                key="acled_date_filter",
+            )
+
+        with d2:
+            show_only_fatal = st.checkbox(
+                "Only events with fatalities",
+                value=False,
+                key="acled_fatal_filter",
+            )
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        filtered_df = df.copy()
+
+        if selected_countries and "country" in filtered_df.columns:
+            filtered_df = filtered_df[filtered_df["country"].isin(selected_countries)]
+
+        if selected_event_types and "event_type" in filtered_df.columns:
+            filtered_df = filtered_df[filtered_df["event_type"].isin(selected_event_types)]
+
+        if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
+            start_date, end_date = selected_dates
+            filtered_df = filtered_df[
+                (filtered_df["event_date"].dt.date >= start_date)
+                & (filtered_df["event_date"].dt.date <= end_date)
+            ]
+
+        if show_only_fatal and "fatalities" in filtered_df.columns:
+            filtered_df = filtered_df[filtered_df["fatalities"] > 0]
+
+        filtered_df = filtered_df.sort_values("event_date")
+
+        if filtered_df.empty:
+            st.warning("No ACLED data matches the current filters.")
+            st.stop()
+            
         total_events = len(filtered_df)
         total_fatalities = int(filtered_df["fatalities"].sum()) if "fatalities" in filtered_df.columns else 0
         countries_count = filtered_df["country"].nunique() if "country" in filtered_df.columns else 0
@@ -506,7 +527,6 @@ with tab2:
             filtered_df["event_date"].max().strftime("%d %b %Y")
             if "event_date" in filtered_df.columns else "Unknown"
         )
-
         k1, k2, k3, k4 = st.columns(4)
         with k1:
             metric_card("Total Events", f"{total_events:,}", "Filtered conflict events")
