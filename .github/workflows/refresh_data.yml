@@ -7,7 +7,11 @@ on:
 
 permissions:
   contents: write
-
+  
+concurrency:
+  group: refresh-data
+  cancel-in-progress: true
+  
 jobs:
   refresh-data:
     runs-on: ubuntu-latest
