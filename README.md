@@ -66,6 +66,18 @@ Automation covers:
 
 ---
 
+## Screenshots
+- Recent War News Pulse tab
+<img width="1704" height="1286" alt="Recent_war1" src="https://github.com/user-attachments/assets/e6696a39-288e-4b00-9067-1701561d0b51" />
+<img width="1658" height="1251" alt="Recent_war2" src="https://github.com/user-attachments/assets/dc138889-00c0-4b3f-954e-ad2292821381" />
+- Structured Conflict Dashboard tab
+<img width="2532" height="1171" alt="Structured_conflict1" src="https://github.com/user-attachments/assets/39f54aa7-6cd8-401b-ba2c-8f3d9755e5ac" />
+<img width="2470" height="1158" alt="Structured_conflict2" src="https://github.com/user-attachments/assets/070cbfa7-efdd-4d27-a208-c1ac3352d620" />
+
+
+
+
+
 ## Tech Stack
 
 - **Python**
@@ -175,5 +187,93 @@ This turns the project from a static dashboard into a lightweight monitoring sys
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Vireen555/global-conflict-intelligence-dashboard.git
 cd global-conflict-intelligence-dashboard
+```
+
+### 2. Create and activate a virtual environment
+
+Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+MAC/Linux
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the data pipeline manually
+
+```bash
+python src/fetch_gdelt.py
+python src/clean_gdelt.py
+```
+
+If needed, you can also run:
+
+```bash
+python src/run_refresh_pipeline.py
+```
+
+### 5. Start the Streamlit app
+
+```bash
+streamlit run app.py
+```
+## Current Capabilities
+
+- recent conflict-news monitoring
+- topic-based war-news analysis
+- media-source distribution analysis
+- automated processed-data refresh pipeline
+- minimal glass-style dashboard UI
+  
+## Limitations
+
+- GDELT provides article/news metadata, not fully structured conflict-event records
+- conflict topic detection is currently rule-based and can still include some noise
+- ACLED recent detailed access depends on account access level
+- article-level geolocation is not yet implemented in the recent news tab
+
+These limitations also create future improvement opportunities.
+
+## Future Improvements
+Planned and possible improvements include:
+- more advanced topic classification
+- better false-positive filtering
+- sentiment or tone analysis
+- clickable article cards
+- region-based filtering for GDELT articles
+- improved summary generation
+- deployment on Streamlit Community Cloud
+- optional React-based frontend version in the future
+
+## Why I Built This
+I wanted to build a project that sits at the intersection of:
+
+- global affairs
+- international studies
+- data analytics
+- Python
+- automation
+- visual storytelling
+The idea was to create something that is not just technically functional, but also relevant to real-world ongoing events and useful as a portfolio showcase.
+## Author
+**Vireen Chowdary Vesangi**
+
+
+If you found this project interesting, feel free to connect or explore the repository.
+
+
+[Linkedin](www.linkedin.com/in/vireenchowdaryvesangi)
+
