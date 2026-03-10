@@ -10,7 +10,7 @@ def fetch_gdelt_articles(
     query: str = '("war" OR "conflict" OR "airstrike" OR "ceasefire")',
     timespan: str = "10d",
     maxrecords: int = 250,
-    max_retries: int = 3,
+    max_retries: int = 5,
     retry_wait: int = 6,
 ) -> pd.DataFrame:
     params = {
@@ -68,7 +68,7 @@ def main():
         query='(war OR conflict OR airstrike OR ceasefire)',
         timespan="10d",
         maxrecords=250,
-        max_retries=3,
+        max_retries=5,
         retry_wait=6,
     )
 
